@@ -9,6 +9,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.62/pdfmake.min.js.map"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.62/vfs_fonts.js"></script>
     <title>Tabs</title>
+
+    <style>
+        .label {
+            font: bold 30px sans-serif;
+            position: absolute;
+            z-index: 1;
+        }
+    </style>
 </head>
 
 <body>
@@ -90,29 +98,99 @@
                     height: height
                 },
                 content: [{
+                    svg: `  
+                    <svg width="${width}" height="${height}">
+                        ${generateTabs()};  
+                        <rect 
+                        x="0" 
+                        y="0" 
+                        width="${width - tabWidth}" 
+                        height="${height}" 
+                        style="fill:white;stroke:rgb(255,0,0);stroke-width:1" />
+                        ${safeArea()};
+                        
+                    </svg>
+                `
+                }, {
                     svg: `
                     <svg width="${width}" height="${height}">
-                        ${generateTabs()};
-                        <rect x="0" y="0" width="${width - tabWidth}" height="${height}" style="fill:white;stroke:rgb(255,0,0);stroke-width:1" />
-                        ${safeArea()};
-                        </svg>
+                        
+                        ${generateTabsBack()};
+                        <rect 
+                        x="${tabWidth}" 
+                        y="0" 
+                        width="${width - tabWidth}" 
+                        height="${height}" 
+                        style="fill:white;stroke:rgb(255,0,0);stroke-width:1" />
+                        ${safeAreaBack()};
+                    </svg>
                 `
                 }]
             };
 
             function generateTabs() {
-                let tabs = `<rect x="${width - (tabWidth + 10)}" y="${topMargin}" rx="${roundCorners}" ry="${roundCorners}" width="${tabWidth + 10}" height="${(height - (bottomMargin + topMargin)) / numberOfTabs}" style="fill:white;stroke:rgb(255,0,0);stroke-width:1" />`;
+                let tabs = `<rect x="${width - (tabWidth + 10)}" y="${topMargin}" 
+                rx="${roundCorners}" 
+                ry="${roundCorners}" 
+                width="${tabWidth + 10}" 
+                height="${(height - (bottomMargin + topMargin)) / numberOfTabs}" 
+                style="fill:white;stroke:rgb(255,0,0);stroke-width:1" />`;
 
                 for (let i = 0; i < numberOfTabs; i++) {
                     if (i !== 0) {
-                        tabs += `<rect x="${width - (tabWidth + 10)}" y="${topMargin + ((height - (bottomMargin + topMargin)) / numberOfTabs) * i}" rx="${roundCorners}" ry="${roundCorners}" width="${tabWidth + 10}" height="${(height - (bottomMargin + topMargin)) / numberOfTabs}" style="fill:transparent;stroke:rgb(255,0,0);stroke-width:1" />`;
+                        tabs += `<rect 
+                        x="${width - (tabWidth + 10)}" 
+                        y="${topMargin + ((height - (bottomMargin + topMargin)) / numberOfTabs) * i}" 
+                        rx="${roundCorners}" 
+                        ry="${roundCorners}" 
+                        width="${tabWidth + 10}" 
+                        height="${(height - (bottomMargin + topMargin)) / numberOfTabs}" 
+                        style="fill:transparent;stroke:rgb(255,0,0);stroke-width:1" />`;
+                    }
+                }
+                return tabs;
+            }
+
+            function generateTabsBack() {
+                let tabs = `<rect x="0" y="${topMargin}" 
+                rx="${roundCorners}" 
+                ry="${roundCorners}" 
+                width="${tabWidth + 10}" 
+                height="${(height - (bottomMargin + topMargin)) / numberOfTabs}" 
+                style="fill:white;stroke:rgb(255,0,0);stroke-width:1" />`;
+
+                for (let i = 0; i < numberOfTabs; i++) {
+                    if (i !== 0) {
+                        tabs += `<rect 
+                        x="0" 
+                        y="${topMargin + ((height - (bottomMargin + topMargin)) / numberOfTabs) * i}" 
+                        rx="${roundCorners}" 
+                        ry="${roundCorners}" 
+                        width="${tabWidth + 10}" 
+                        height="${(height - (bottomMargin + topMargin)) / numberOfTabs}" 
+                        style="fill:transparent;stroke:rgb(255,0,0);stroke-width:1" />`;
                     }
                 }
                 return tabs;
             }
 
             function safeArea() {
-                return `<rect x="45" y="${topMargin}" width="${((width - topMargin) - 45) - tabWidth}" height="${height - (topMargin + bottomMargin)}" style="fill:#EBF5FB">`
+                return `
+                <rect 
+                x="45" 
+                y="${topMargin}" 
+                width="${((width - topMargin) - 45) - tabWidth}" 
+                height="${height - (topMargin + bottomMargin)}" 
+                style="fill:#EBF5FB">`
+            }
+
+            function safeAreaBack() {
+                return `<rect 
+                x="${tabWidth + topMargin}" 
+                y="${topMargin}" 
+                width="${((width - topMargin) - 45) - tabWidth}" 
+                height="${height - (topMargin + bottomMargin)}" 
+                style="fill:#EBF5FB">`
             }
 
             function safeAreaTab(x, y) {
@@ -120,6 +198,7 @@
             }
 
             pdfMake.createPdf(docDefinition).open();
+            pdfMake.end();
         }
 
     </script>
